@@ -1,29 +1,26 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import https from 'https';
+import fetch from 'node-fetch';
 
-export default function handler(
+export default async function handler(
   request: VercelRequest,
   response: VercelResponse
 ) {
-  const url = 'https://c4.ysepan.com/f_ht/ajcx/wj.aspx?cz=dq&jsq=0&mlbh=1938934&wjpx=1&_dlmc=xdtool&_dlmm=';
+  try {
+    const url = 'http://c4.ysepan.com/f_ht/ajcx/wj.aspx?cz=dq&jsq=0&mlbh=1938934&wjpx=1&_dlmc=xdtool&_dlmm=';
+    const fetchResponse = await fetch(url, {
+      headers: {
+        Referer: 'http://c4.ysepan.com/f_ht/ajcx/000ht.html?bbh=1172'
+      }
+    });
 
-  https.get(url, {
-    headers: {
-      Referer: 'http://c4.ysepan.com/f_ht/ajcx/000ht.html?bbh=1172'
+    if (!fetchResponse.ok) {
+      throw new Error(`HTTP error! status: ${fetchResponse.status}`);
     }
-  }, (res) => {
-    let data = '';
 
-    res.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    res.on('end', () => {
-      response.status(200).send(data);
-    });
-
-  }).on('error', (err) => {
-    console.error('Error fetching data:', err);
+    const data = await fetchResponse.text();
+    response.status(200).send(data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
     response.status(500).send('请求失败');
-  });
+  }
 }
