@@ -12,6 +12,8 @@ export default async function handler(
         Referer: 'http://c4.ysepan.com/f_ht/ajcx/000ht.html?bbh=1172'
       }
     });
+    console.error(url);
+    console.error(result.data);
     response.status(200).send(result.data);
   } catch (error) {
     console.error('Error fetching data:', error);
