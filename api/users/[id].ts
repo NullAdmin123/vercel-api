@@ -1,36 +1,42 @@
-import type { VercelRequest， VercelResponse } from '@vercel/node';
-import fetch from 'node-fetch';
-
-export 默认 async function handler(
+import fetch from 'node-fetch'
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+export default function handler(
   request: VercelRequest,
   response: VercelResponse
 ) {
-  const { id } = request.query;
+  const { id } = request.query
+  var data = await run()
+  return response.json({
+    id,
+    name: data
+  })
+}
+
+async function run() {
+  var url = 'http://c4.ysepan.com/f_ht/ajcx/wj.aspx?cz=dq&jsq=0&mlbh=1938934&wjpx=1&_dlmc=xdtool&_dlmm=';
+  var referer = 'http://c4.ysepan.com/f_ht/ajcx/000ht.html?bbh=1172';
+  try {
+    var data = await fetchData(url, referer);
+    console.log(data);
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  }
+}
+async function fetchData(url: string, referer: string): Promise<string> {
+  var headers = {
+    'Referer': referer
+  };
 
   try {
-    // 目标 URL
-    const url = 'http://c4.ysepan.com/f_ht/ajcx/wj.aspx?cz=dq&jsq=0&mlbh=1938934&wjpx=1&_dlmc=xdtool&_dlmm=';
-    // 附加的 Referer 头
-    const headers = {
-      'Referer': 'http://c4.ysepan.com/f_ht/ajcx/000ht.html?bbh=1172'
-    };
-
     // 发送 GET 请求
-    const res = await fetch(url, { headers });
-    const data = await res.text();
-
-    // 返回请求结果
-    return response.json({
-      id，
-      name: 'shanyue'，
-      result: data
-    });
+    var res = await fetch(url, { headers });
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    var data = await res.text();
+    return data;
   } catch (error) {
-    // 错误处理
-    return response.json({
-      id，
-      name: 'shanyue'，
-      error: 'Failed to fetch data'
-    });
+    console.error('Error fetching data:', error);
+    throw error;
   }
 }
